@@ -11,7 +11,7 @@ class Player(Character):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load('../assets/FunGuy1.png').convert_alpha()
-        self.rect = self.image.get_rect(midbottom = (400,300)) 
+        self.rect = self.image.get_rect(center = (400,300)) 
 
     def player_input(self):
         keys = pygame.key.get_pressed()
