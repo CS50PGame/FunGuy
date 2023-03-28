@@ -39,7 +39,7 @@ class Game:
         player = Player()
         allsprites.add(player)
         allsprites.draw(self.screen)
-        camera = Camera(screen_width, screen_height)
+        camera = Camera(WIDTH, HEIGHT)
 
         # Game loop
         running = True
