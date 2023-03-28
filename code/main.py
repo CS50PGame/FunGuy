@@ -34,9 +34,12 @@ class Game:
                     waiting = False
 
         pygame.display.update()
-        player = pygame.sprite.GroupSingle()
-        player.add(Player())
-        player.draw(self.screen)
+        allsprites = pygame.sprite.Group()
+        allsprites.add(Background())
+        player = Player()
+        allsprites.add(player)
+        allsprites.draw(self.screen)
+        camera = Camera(screen_width, screen_height)
 
         # Game loop
         running = True
@@ -46,14 +49,35 @@ class Game:
                     running = False
 
             # Move player and redraw the screen
-            player.update()
-            self.screen.fill((255, 255, 255))
-            player.draw(self.screen)
+            allsprites.update()
+            camera.update(player)
+            for sprite in allsprites:
+                self.screen.blit(sprite.image, camera.apply(sprite))
             pygame.display.update()
-            self.clock.tick(FPS)
+            self.clock.tick(60)
 
         # Quit Pygame
         pygame.quit()
+
+
+class Background(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('../assets/background.png').convert()
+        self.rect = self.image.get_rect(center=(0, 0))
+
+class Camera:
+    def __init__(self, width, height):
+        self.rect = pygame.Rect(0, 0, width, height)
+
+    def update(self, target):
+        x = -target.rect.centerx + WIDTH // 2
+        y = -target.rect.centery + HEIGHT // 2
+        self.rect = pygame.Rect(x, y, self.rect.width, self.rect.height)
+
+    def apply(self, sprite):
+        return sprite.rect.move(self.rect.topleft)
+
 
 if __name__=="__main__":
     game = Game()
