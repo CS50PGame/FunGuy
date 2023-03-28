@@ -24,6 +24,7 @@ class Player(Character):
         self.direction = pygame.math.Vector2()
         self.inventory = []
 
+
     def add_item(self, item):
         self.inventory.append(item)
         self.hp += item.hp_bonus
