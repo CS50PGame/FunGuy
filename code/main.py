@@ -9,6 +9,26 @@ screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Simple')
 
+
+class Background(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('../assets/background.png').convert()
+        self.rect = self.image.get_rect(center=(0, 0))
+
+class Camera:
+    def __init__(self, width, height):
+        self.rect = pygame.Rect(0, 0, width, height)
+
+    def update(self, target):
+        x = -target.rect.centerx + screen_width // 2
+        y = -target.rect.centery + screen_height // 2
+        self.rect = pygame.Rect(x, y, self.rect.width, self.rect.height)
+
+    def apply(self, sprite):
+        return sprite.rect.move(self.rect.topleft)
+
+
 clock = pygame.time.Clock()
 
 # Title Screen
@@ -34,9 +54,13 @@ while waiting:
 # Initialize game screen and player
 screen.fill((255, 255, 255))
 pygame.display.update()
-player = pygame.sprite.GroupSingle()
-player.add(Player())
-player.draw(screen)
+allsprites = pygame.sprite.Group()
+allsprites.add(Background())
+player = Player()
+allsprites.add(player)
+allsprites.draw(screen)
+
+camera = Camera(screen_width, screen_height)
 
 # Game loop
 running = True
@@ -47,9 +71,11 @@ while running:
             running = False
 
     # Move player and redraw the screen
-    player.update()
     screen.fill((255, 255, 255))
-    player.draw(screen)
+    allsprites.update()
+    camera.update(player)
+    for sprite in allsprites:
+        screen.blit(sprite.image, camera.apply(sprite))
     pygame.display.update()
     clock.tick(60)
 
