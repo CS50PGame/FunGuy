@@ -21,6 +21,7 @@ class Player(Character):
     def __init__(self, groups):
         super().__init__(groups)
         self.image = pygame.image.load('../assets/player/FunGuyMainChar.png').convert_alpha()
+
         self.rect = self.image.get_rect(center = (400,300)) 
         self.direction = pygame.math.Vector2()
         self.inventory = []

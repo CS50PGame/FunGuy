@@ -7,6 +7,7 @@ class Enemy(pygame.sprite.Sprite):
         
         self.direction = pygame.math.Vector2()
         self.image = pygame.image.load('../assets/enemy/EnemyBoy.png').convert_alpha()
+
         self.rect = self.image.get_rect(center = (600,400))
         self.speed = 1
         

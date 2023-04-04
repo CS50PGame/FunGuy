@@ -46,6 +46,7 @@ class Game:
         enemy4 = Enemy([allsprites])
         enemy4.rect = enemy4.image.get_rect(center = (700,100))
 
+
         # Game loop
         running = True
         while running:
