@@ -39,6 +39,12 @@ class Game:
         allsprites = CameraGroup()
         player = Player([allsprites])
         enemy = Enemy([allsprites])
+        enemy2 = Enemy([allsprites])
+        enemy2.rect = enemy2.image.get_rect(center = (100,400))
+        enemy3 = Enemy([allsprites])
+        enemy3.rect = enemy3.image.get_rect(center = (100,100))
+        enemy4 = Enemy([allsprites])
+        enemy4.rect = enemy4.image.get_rect(center = (700,100))
 
         # Game loop
         running = True
