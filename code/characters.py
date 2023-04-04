@@ -1,8 +1,8 @@
 import pygame
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, groups):
+        super().__init__(groups)
         self.movement_speed = 5
         self.hp = 100
         self.hp_regen = 0
@@ -17,8 +17,8 @@ class Character(pygame.sprite.Sprite):
         self.luck = 0
 
 class Player(Character):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, groups):
+        super().__init__(groups)
         self.image = pygame.image.load('../assets/FunGuy1.png').convert_alpha()
         self.rect = self.image.get_rect(center = (400,300)) 
         self.direction = pygame.math.Vector2()

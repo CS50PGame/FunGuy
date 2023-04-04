@@ -1,6 +1,7 @@
 import pygame
 from characters import Player
 from settings import *
+from enemy import Enemy
 
 class Game:
     def __init__(self):
@@ -34,12 +35,10 @@ class Game:
                     waiting = False
 
         pygame.display.update()
-        allsprites = pygame.sprite.Group()
-        allsprites.add(Background())
-        player = Player()
-        allsprites.add(player)
-        allsprites.draw(self.screen)
-        camera = Camera(WIDTH, HEIGHT)
+        
+        allsprites = CameraGroup()
+        player = Player([allsprites])
+        enemy = Enemy([allsprites])
 
         # Game loop
         running = True
@@ -49,35 +48,51 @@ class Game:
                     running = False
 
             # Move player and redraw the screen
+            allsprites.custom_draw(player)
             allsprites.update()
-            camera.update(player)
-            for sprite in allsprites:
-                self.screen.blit(sprite.image, camera.apply(sprite))
+            allsprites.enemy_update(player)
             pygame.display.update()
             self.clock.tick(60)
 
         # Quit Pygame
         pygame.quit()
 
-
 class Background(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load('../assets/background.png').convert()
         self.rect = self.image.get_rect(center=(0, 0))
+        
+class CameraGroup(pygame.sprite.Group):
+    def __init__(self):
+        super().__init__()
+        self.display_surface = pygame.display.get_surface()
+        self.half_width = self.display_surface.get_width() // 2
+        self.half_height = self.display_surface.get_height() // 2
+        self.offset = pygame.math.Vector2()
+        
+        self.surf = pygame.image.load('../assets/background.png').convert()
+        self.rect = self.surf.get_rect(topleft=(0,0))
 
-class Camera:
-    def __init__(self, width, height):
-        self.rect = pygame.Rect(0, 0, width, height)
+    def custom_draw(self, player):
+        self.offset.x = player.rect.centerx - self.half_width
+        self.offset.y = player.rect.centery - self.half_height
 
-    def update(self, target):
-        x = -target.rect.centerx + WIDTH // 2
-        y = -target.rect.centery + HEIGHT // 2
-        self.rect = pygame.Rect(x, y, self.rect.width, self.rect.height)
+        floor_offset_pos = self.rect.topleft - self.offset
+        self.display_surface.blit(self.surf, floor_offset_pos)
 
-    def apply(self, sprite):
-        return sprite.rect.move(self.rect.topleft)
-
+        for sprite in self.sprites():
+            offset_pos = sprite.rect.topleft - self.offset
+            self.display_surface.blit(sprite.image, offset_pos)
+        
+    def enemy_update(self, player):
+        enemy_sprites = [
+            sprite
+            for sprite in self.sprites()
+            if hasattr(sprite, "sprite_type") and sprite.sprite_type == "enemy"
+        ]
+        for enemy in enemy_sprites:
+            enemy.enemy_update(player)
 
 if __name__=="__main__":
     game = Game()
