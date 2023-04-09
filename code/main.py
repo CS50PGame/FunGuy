@@ -1,7 +1,6 @@
 import pygame
-from characters import Player
+from level import Level
 from settings import *
-from enemy import Enemy
 
 class Game:
     def __init__(self):
@@ -9,6 +8,7 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('FunGuy')
         self.clock = pygame.time.Clock()
+        self.level = Level()
 
     def draw_title_screen(self):
         self.screen.fill(('black'))
@@ -36,17 +36,6 @@ class Game:
 
         pygame.display.update()
         
-        allsprites = CameraGroup()
-        player = Player([allsprites])
-        enemy = Enemy([allsprites])
-        enemy2 = Enemy([allsprites])
-        enemy2.rect = enemy2.image.get_rect(center = (100,400))
-        enemy3 = Enemy([allsprites])
-        enemy3.rect = enemy3.image.get_rect(center = (100,100))
-        enemy4 = Enemy([allsprites])
-        enemy4.rect = enemy4.image.get_rect(center = (700,100))
-
-
         # Game loop
         running = True
         while running:
@@ -54,52 +43,13 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
 
-            # Move player and redraw the screen
-            allsprites.custom_draw(player)
-            allsprites.update()
-            allsprites.enemy_update(player)
+            self.screen.fill('black')
+            self.level.run()
             pygame.display.update()
-            self.clock.tick(60)
+            self.clock.tick(FPS)
 
-        # Quit Pygame
         pygame.quit()
 
-class Background(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load('../assets/background.png').convert()
-        self.rect = self.image.get_rect(center=(0, 0))
-        
-class CameraGroup(pygame.sprite.Group):
-    def __init__(self):
-        super().__init__()
-        self.display_surface = pygame.display.get_surface()
-        self.half_width = self.display_surface.get_width() // 2
-        self.half_height = self.display_surface.get_height() // 2
-        self.offset = pygame.math.Vector2()
-        
-        self.surf = pygame.image.load('../assets/background.png').convert()
-        self.rect = self.surf.get_rect(topleft=(0,0))
-
-    def custom_draw(self, player):
-        self.offset.x = player.rect.centerx - self.half_width
-        self.offset.y = player.rect.centery - self.half_height
-
-        floor_offset_pos = self.rect.topleft - self.offset
-        self.display_surface.blit(self.surf, floor_offset_pos)
-
-        for sprite in self.sprites():
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display_surface.blit(sprite.image, offset_pos)
-        
-    def enemy_update(self, player):
-        enemy_sprites = [
-            sprite
-            for sprite in self.sprites()
-            if hasattr(sprite, "sprite_type") and sprite.sprite_type == "enemy"
-        ]
-        for enemy in enemy_sprites:
-            enemy.enemy_update(player)
 
 if __name__=="__main__":
     game = Game()
