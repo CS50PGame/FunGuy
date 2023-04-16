@@ -18,11 +18,12 @@ class Character(pygame.sprite.Sprite):
         self.luck = 0
 
 class Player(Character):
-    def __init__(self, groups):
+    def __init__(self, pos, groups):
         super().__init__(groups)
         self.image = pygame.image.load('../assets/player/FunGuyMainChar.png').convert_alpha()
 
-        self.rect = self.image.get_rect(center = (400,300)) 
+        self.rect = self.image.get_rect(center = (pos)) 
+        self.hitbox = self.rect.inflate(0,-26)
         self.direction = pygame.math.Vector2()
         self.inventory = []
 
@@ -91,7 +92,7 @@ class Player(Character):
     def move(self, speed):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
-        self.rect.center += self.direction * speed
+        self.hitbox.center += self.direction * speed
 
     def animate(self):
         animation = self.animations[self.status]
@@ -100,6 +101,7 @@ class Player(Character):
             self.frame_index = 0
 
         self.image = animation[int(self.frame_index)]
+        self.rect = self.image.get_rect(center = self.hitbox.center)
 
     def update(self):
         self.input()
